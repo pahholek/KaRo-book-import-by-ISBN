@@ -16,3 +16,11 @@ Następnie w pliku main.py na samym dole zmieniamy numer isbn na własny i uruch
 ```bash
   python3 main.py
 ```
+
+# UWAGI
+W ostatniej lini:
+```py
+  print(get_data(9788381181341, 'BN')) #lib = BN - Biblioteka Narodowa, UJ - Biblioteka jagielońska
+```
+W miejscu "BN" wpisujemy kod biblioteki z której pobieramy dane
+W miejscu liczby "9788381181341" wpisujemy isbn
