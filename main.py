@@ -1,7 +1,7 @@
-def get_data(isbn):
+def get_data(isbn, lib): #lib = BN - Biblioteka Narodowa, UJ - Biblioteka jagielońska
     import requests
     isbn = str(isbn)
-
+    lib = str(lib)
     payload = {
         'kl': '',
         'al': '',
@@ -13,7 +13,7 @@ def get_data(isbn):
         'pubyearh': '',
         'pubyearl': '',
         'lang': 'pl',
-        'bib': 'UJ',
+        'bib': lib,
         'si': '1',
         'qt': 'F',
         'di': 'i' + isbn,
@@ -42,8 +42,7 @@ def get_data(isbn):
         except:
             pass
 
-    print(table_data_clean)
-
+    print(table_data)
     # check if data is present
     table_data_trimmed = []
     if not table_data_clean:
@@ -51,24 +50,61 @@ def get_data(isbn):
     else:
         # trim data
         for i in range(len(table_data_clean)):
+                # ISBN 0
             if int(table_data_clean[i][0]) == 20:
-                # ISBN
                 table_data_trimmed.append(table_data_clean[i])
+                # TITLE 1
             if int(table_data_clean[i][0]) == 245:
-                # TITLE
                 table_data_trimmed.append(table_data_clean[i])
+                # PUBLISHER 2
             if int(table_data_clean[i][0]) == 260:
-                # PUBLISHER
                 table_data_trimmed.append(table_data_clean[i])
-            if int(table_data_clean[i][0]) == 700:
-                # AUTHORS
-                for j in range(len(table_data_clean)):
-                    if int(table_data_clean[i][0]) == 700:
-                        table_data_trimmed.append(table_data_clean[i])
+                # TIME OF CREATION 3
             if int(table_data_clean[i][0] == 388):
-                # TIME OF CREATION
                 table_data_trimmed.append(table_data_clean[i])
-    return table_data_trimmed
+                #AUTHORS
+            if int(table_data_clean[i][0]) == 700:
+                table_data_trimmed.append(table_data_clean[i])
+        # extract strings
+        extracted_data = [isbn]
+
+        def extract_Title(string):
+            string = string.split('$c')[0]
+            string = string.split('$a')[1]
+            string = string.split('$b')[0] + string.split('$b')[1]
+            return string
+        extracted_data.append([extract_Title(table_data_trimmed[1][2]), 'isbn'])
 
 
-print(get_data(9788381181341))
+        def extract_Authors(data):
+            authors = []
+            authors_string = ''
+            for i in range(len(data)):
+                if int(data[i][0]) == 700:
+                    string = data[i][2]
+                    string = string.split('$a')[1]
+                    string = string.split('$')[0]
+                    string = string.strip()
+                    string = string.replace(',', '')
+                    authors.append(string)
+            for k in range(len(authors)):
+                if k == len(authors)-1:
+                    authors_string = authors_string + authors[k]
+                else:
+                    authors_string = authors_string + authors[k] + ', '
+            return authors_string
+        extracted_data.append([extract_Authors(table_data_trimmed), 'authors'])
+
+
+        def extract_Publisher(string):
+           string = string.split('$b')[1]
+           string = string.split('$c')[0]
+           string = string.replace(',', '')
+           string = string.strip()
+           return string
+        extracted_data.append([extract_Publisher(table_data_trimmed[2][2]), 'Publisher'])
+
+        for i in range(len(table_data_trimmed)):
+            print(table_data_trimmed[i])
+        return extracted_data
+print(get_data(9788381181341, 'BN')) #lib = BN - Biblioteka Narodowa, UJ - Biblioteka jagielońska
