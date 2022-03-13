@@ -66,14 +66,14 @@ def get_data(isbn, lib): #lib = BN - Biblioteka Narodowa, UJ - Biblioteka jagiel
             if int(table_data_clean[i][0]) == 700:
                 table_data_trimmed.append(table_data_clean[i])
         # extract strings
-        extracted_data = [isbn]
+        extracted_data = [[isbn, 'isbn']]
 
         def extract_Title(string):
             string = string.split('$c')[0]
             string = string.split('$a')[1]
             string = string.split('$b')[0] + string.split('$b')[1]
             return string
-        extracted_data.append([extract_Title(table_data_trimmed[1][2]), 'isbn'])
+        extracted_data.append([extract_Title(table_data_trimmed[1][2]), 'title'])
 
 
         def extract_Authors(data):
